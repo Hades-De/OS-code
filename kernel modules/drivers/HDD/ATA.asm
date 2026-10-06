@@ -12,6 +12,22 @@ init:
     push ebp
     ret
 
+get_total_lba:
+    mov dx, 0x1F6
+    mov al, 0xA0
+    out dx, al
+    mov dx, 0x1f2
+    xor al, al
+    out dx, al
+    inc dx ;0x1f3
+    out dx, al
+    inc dx ;0x1f4
+    out dx, al
+    inc dx ;0x1f5
+    out dx, al
+    mov dx, 0x1F7
+    mov al, 0xEC
+    out dx, al
 
 setup_lba_28b: ;expects eax to hold lba and ebx seccnt, edi dest
         mov dword [lba_addr], eax

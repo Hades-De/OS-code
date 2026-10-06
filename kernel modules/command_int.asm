@@ -11,14 +11,51 @@ init:; command buffer input and output the handler
     push ebp
     ret
 
+    hex_convert:
+        xor eax, eax
+        xor edx, edx
+        .next:
+            mov dl, [esi]
+            cmp dl, ','
+            je .done
+            cmp dl, 0x00
+            je .done
+            cmp dl, 0x66
+            jg .done
+            cmp dl, 0x61
+            jge .letter
+            sub dl, '0'
+            shl eax, 4
+            add eax, edx 
+            inc esi
+            jmp .next
+        .letter:
+            xor edi, edi
+            sub dl, 0x61
+            mov edi, hex_table
+            add edi, edx
+            mov dl, [edi]
+            shl eax, 4
+            add eax, edx
+            inc esi
+            jmp .next
+            
+        .done:
+            ret
+
 %include "./commands/dump_handler.asm"
 %include "./commands/clear_handler.asm"
+%include "./commands/valloc_handler.asm"
+%include "./commands/vfree_handler.asm"
+%include "./commands/look_handler.asm"
+%include "./commands/help_handler.asm"
+%include "./commands/poke_handler.asm"
         handle_enter:
             xor ebx, ebx
             xor ecx, ecx
             ;loop for commands
             .loop_find_command:
-                mov edi, dump_cmd
+                mov edi, cmds
                 add edi, ebx
                 mov esi, [command_buffer]
                 mov ecx, 4 ; only checks the base. if i want to add args, i need to code it like that
@@ -36,6 +73,8 @@ init:; command buffer input and output the handler
                     mov ecx, Dump_regs-NCM -1
                     mov ebx, NCM
                     xor eax, eax
+                    int 0x80
+                    mov eax, 0x02
                     int 0x80
                 return_kernel:
                     mov ecx, [esi_CB_stor]
@@ -63,12 +102,30 @@ Dump_regs db 0
 esi_CB_stor dd 0x00
 command_buffer dd 0x00
 command_timeout equ 256
-;cmds
-    dump_cmd db "dump"
-    clear_cmd db "clr" ,0x00
+cmds:
+    db "dump"
+    db "clr" ,0x00
+    db "vget"
+    db 'vdel'
+    db 'look'
+    db 'help'
+    db 'poke'
 
 handler:
-dd dump_command
-dd clear_command
+dd dump
+dd clear
+dd vget
+dd vdel
+dd look
+dd help
+dd poke
 
-times 512 - ($ - $$) db 0
+hex_table:
+db 0x0a
+db 0x0b
+db 0x0c
+db 0x0d
+db 0x0e
+db 0x0f
+
+times 1024 - ($ - $$) db 0

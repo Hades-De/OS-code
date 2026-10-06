@@ -81,12 +81,12 @@ debug_memory:
         ;expects eax to hold the mem location to check. and shows 32 4 bytes chunks of the loc
         pop edx
         mov ebx, eax
-        mov ecx, 32
+        xor ecx, ecx
         loop_printmem:
             mov eax, [ebx +ecx*4]
             push eax
-            dec ecx
-            cmp ecx, 0
+            inc ecx
+            cmp ecx, 32
             jne loop_printmem
         push edx
         ret

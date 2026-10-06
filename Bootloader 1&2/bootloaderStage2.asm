@@ -177,7 +177,7 @@ ata_load:
                     jne .wait_read_kernel
                     mov dx, 0x1f0
                 inc ebx
-                cmp ebx, 120
+                cmp ebx, sectorcnt
                 jne .loop_kernel_write
                 mov byte [esi], 'J'
                 mov byte [esi+1], 0x0f
@@ -212,7 +212,7 @@ ata_load:
 disk db 0x00
 ;LBA info
     base_io_prim equ 0x1f0
-    sectorcnt equ 120
+    sectorcnt equ 122
     lba_addr equ 0x0b
     lba_dr_hd db 0x00
     lba_high db 0x00

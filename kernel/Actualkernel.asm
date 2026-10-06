@@ -518,6 +518,8 @@ cli
             dest dd 0x00
             read_lba_28 dd 0x00
             ata_flag db 0x00
+            identify_buffer:
+                times 256 dw 0
 ;mmu
             Valloc dd 0x00
             Vfree dd 0x00
